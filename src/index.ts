@@ -12,6 +12,7 @@ import { HTTP_PROVIDERS } from '@angular/http';
 import { ROUTER_PROVIDERS } from '@angular/router-deprecated';
 import { APP_BASE_HREF } from '@angular/common/index';
 import { NgRedux } from 'ng2-redux';
+import { ToastsManager } from 'ng2-toastr';
 
 import { RioSampleApp } from './containers/sample-app';
 import { SessionActions } from './actions/session';
@@ -33,6 +34,7 @@ if (!__TEST__) {
     SessionActions,
     AuthService,
     ServerService,
+    ToastsManager,
     HTTP_PROVIDERS,
     ROUTER_PROVIDERS,
     RealTime,

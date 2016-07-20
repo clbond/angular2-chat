@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NgRedux } from 'ng2-redux';
+import { ToastsManager } from 'ng2-toastr';
 import { IAppState } from '../reducers';
 import { ServerService } from '../services/server';
 
@@ -38,7 +39,9 @@ export class ContactsActions {
   constructor(
       private ngRedux: NgRedux<IAppState>,
       private service: ServerService,
-      private realtime: RealTime) {
+      private realtime: RealTime,
+      private toasts: ToastsManager
+  ) {
     this.realtime.subscribePresence(this.presencePublished.bind(this));
   }
 
@@ -93,10 +96,16 @@ export class ContactsActions {
       () => this.ngRedux.dispatch({
         type: ContactsActions.ADD_CONTACT_COMPLETE,
       }),
-      err => this.ngRedux.dispatch({
-        type: ContactsActions.ADD_CONTACT_ERROR,
-        payload: err.message || 'Failure to add contact'
-      }));
+      error => {
+        const message = `${error.status} ${error._body}`;
+
+        this.ngRedux.dispatch({
+          type: ContactsActions.ADD_CONTACT_ERROR,
+          payload: message
+        });
+
+        this.toasts.error(`Failed to add contact: ${message}`);
+      });
   }
 
   list() {
@@ -113,9 +122,14 @@ export class ContactsActions {
         type: ContactsActions.LIST_AVAILABLE_CONTACTS,
         payload: contacts.map(c => transform(c)),
       }),
-      err => this.ngRedux.dispatch({
-        type: ContactsActions.LIST_AVAILABLE_CONTACTS_FAILED,
-      }));
+      error => {
+        this.ngRedux.dispatch({
+          type: ContactsActions.LIST_AVAILABLE_CONTACTS_FAILED,
+        });
+
+        this.toasts.error(
+          `Failed to list contacts: ${error.status} ${error._body}`);
+      });
   }
 
   removeContact(contact: ConcreteContact) {
@@ -127,8 +141,9 @@ export class ContactsActions {
         type: ContactsActions.DELETE_CONTACT,
         payload: contact.username
       }))
-      .catch(err => {
-        console.error('Failed to delete contact', err);
+      .catch(error => {
+        this.toasts.error(
+          `Failed to delete contact: ${error.status} ${error._body}`);
       });
   }
 
@@ -136,14 +151,18 @@ export class ContactsActions {
     const promise = this.service
       .getSingle<void>(`/contacts/change-presence/${Presence[state]}`);
 
-    promise.then(() => {});
+    promise.then(() => {
+      this.ngRedux.dispatch({
+        type: ContactsActions.CHANGE_PRESENCE,
+        payload: state,
+      });
 
-    this.ngRedux.dispatch({
-      type: ContactsActions.CHANGE_PRESENCE,
-      payload: state,
+      this.realtime.publishPresence(state);
+    })
+    .catch(error => {
+        this.toasts.error(
+          `Failed to change presence: ${error.status} ${error._body}`);
     });
-
-    this.realtime.publishPresence(state);
   }
 
   presencePublished(from: ConcreteContact, state: Presence) {

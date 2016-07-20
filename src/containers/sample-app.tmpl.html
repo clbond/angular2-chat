@@ -1,20 +1,18 @@
 <div>
+  <rio-toasts></rio-toasts>
   <rio-login-modal
     (submit)="actions.loginUser($event)"
     [failure]="failure$ | async"
     [pending]="pending$ | async"
     *ngIf="loggedOut$ | async">
   </rio-login-modal>
-
   <rio-navigator>
     <rio-navigator-item [mr]=true>
       <rio-logo></rio-logo>
     </rio-navigator-item>
-
     <rio-navigator-item *ngIf="loggedIn$ | async" [mr]=true>
       {{ userName$ | async }}
     </rio-navigator-item>
-
     <rio-navigator-item [hidden]="loggedOut$ | async">
       <rio-button
           qaid="qa-logout-button"

@@ -9,7 +9,6 @@ exports.tslint = {
 exports.ts = {
   test: /\.ts$/,
   loader: 'awesome-typescript-loader',
-  exclude: /node_modules/,
 };
 
 exports.istanbulInstrumenter = {
@@ -20,13 +19,11 @@ exports.istanbulInstrumenter = {
 exports.html = {
   test: /\.html$/,
   loader: 'raw',
-  exclude: /node_modules/,
 };
 
 exports.css = {
   test: /\.css$/,
   loader: 'to-string!css!postcss',
-  exclude: /node_modules/,
 };
 
 exports.svg = makeUrlLoader(/\.svg$/);

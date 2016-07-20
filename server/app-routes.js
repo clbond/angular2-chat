@@ -59,6 +59,6 @@ module.exports = function routes(app, users) {
     bu((user, req, response) => {
       users[user].presence = req.params.presence;
 
-      response.send({});
+      response.status(200).send({});
     }));
 };

@@ -18,14 +18,20 @@ import {
   RioNavigator,
   RioNavigatorItem,
   RioLogo,
-  RioLoginModal
+  RioLoginModal,
+  RioToasts,
 } from '../components';
 
 @Component({
   selector: 'rio-sample-app',
   directives: [
-    ROUTER_DIRECTIVES, RioNavigator, RioNavigatorItem,
-    RioLoginModal, RioLogo, RioButton
+    ROUTER_DIRECTIVES,
+    RioNavigator,
+    RioNavigatorItem,
+    RioLoginModal,
+    RioLogo,
+    RioButton,
+    RioToasts,
   ],
   pipes: [ AsyncPipe ],
   encapsulation: ViewEncapsulation.None,
@@ -51,7 +57,7 @@ export class RioSampleApp {
 
   constructor(
     private ngRedux: NgRedux<IAppState>,
-    private actions: SessionActions, 
+    private actions: SessionActions,
     private realTime: RealTime  // angular is lazy, force a connection
   ) {
 
